@@ -1,97 +1,89 @@
-class Book:
-    def __init__(self, title: str, author: str):
-        self.title = title
-        self.author = author
-        self.is_check_out = False 
+class Product:
+    """ 
+    Represents a single product with its details.
+
+    Attributes:
+        name (str): The name of the product.
+        product_id (str): The unique identifier for the product.
+        price (float): The price of the product.
+        stock (int): The available quantity in stock.
+    """
+    def __init__(self, name: str, product_id: str, price: float, stock: int):
+        self.name = name
+        self.product_id = product_id
+        self.price = price
+        self.stock = stock
 
     def __repr__(self) -> str:
-        if self.is_check_out == False:
-            return f"<Book: {self.title} by {self.author} (Available)>"
+        if self.stock > 0:
+            return f"<Product: {self.name} (ID: {self.product_id}), Price: ${self.price}, Stock: {self.stock}>"
         else:
-            return f"<Book: {self.title} by {self.author} (Checked Out)>"
+            return f"<Product: {self.name} (ID: {self.product_id}), Price: ${self.price} (Out of Stock)>"
 
+class ShoppingCart:
+    """     
+    Attribute:
+        Set "product_list" as a dict.
+        example: product_list = {'P001': {'product': <Product Object>, 'quantity': 2}}
 
-class Library:
-    def __init__(self, name: str):
-        self.name = name #name of library
-        self.books = [] #books of library
+    Funtions of ShoppingCart:
+        1. Add product
+        2. Calculate total prices
+        3. Remove and add products (if adding same products, should update its amount,
+        instead of adding another product in list)
+    """
 
-    def add_book(self, book_object: Book):
-        self.books.append(book_object)
-        print(f"Added {book_object.title} in library successfully") 
+    def __init__(self):
+        self.product_list = {}
 
+    def add_product(self, product: Product, quantity: int = 1) -> None:
+        p_id = product.product_id
 
-    def check_out_book(self, title: str):
-        for book in self.books:
-            # match the title first
-            if book.title == title: 
-                if not book.is_check_out:
-                    book.is_check_out = True
-                    print(f"Borrowed {title} successfully")
-                else:
-                    print(f"{title} has been borrowed")
-                return
-        print(f"{title} doesn't exist")
-
-
-    def return_book(self, title: str):
-        for book in self.books:
-            if book.title == title:
-                if book.is_check_out:
-                    book.is_check_out = False
-                    print(f"Return {title} successfully")
-                # 使用 else 來確保兩種情況只會發生一種
-                else:
-                    print(f"{title} hasn't been borrowed, don't need to return")
-                return
-
-        print(f"{title} doesn't exist")
-
-
-    def list_available_books(self):
-        avalible_books = []
-        for book in self.books:
-            if not book.is_check_out:
-                avalible_books.append(book)
-
-        if not avalible_books:
-            print(f"All books are borrowed")
+        if p_id in self.product_list:
+            self.product_list[p_id]['quantity'] += quantity
+            print(f"updated {product.name} quantity to {self.product_list[p_id]['quantity']}")
         else:
-            for book in avalible_books:
-                print(book)
+            self.product_list[p_id] = {'product': product, 'quantity': quantity}
+            print(f"Added {quantity} {product.name}s into shopping cart successfully.")
+
+    def remove_product(self, product_id: str, quantity: int = 1) -> None:
+        if product_id in self.product_list:
+            self.product_list.pop(product_id)
+            print(f"{product_id} has been removed from shopping cart")
+        else:
+            print(f"{product_id} does not exist in the shopping cart")
+
+    def calculate_total(self) -> float:
+        total_price = 0
+        for products in self.product_list.values():
+            total_price += products['product'].price * products['quantity']
+        return total_price
+
+    def __repr__(self):
+        num_items = sum(item_data['quantity'] for item_data in self.product_list.values())
+        num_unique_products = len(self.product_list)
+        total_value = self.calculate_total()
+        return f"<ShoppingCart: {num_unique_products} unique products, {num_items} total items, Total: ${total_value:.2f}>"
 
 if __name__ == "__main__":
-    city_library = Library("市立圖書館")
-    book1 = Book("哈利波特", "J.K. Rowling")
-    book2 = Book("沙丘", "Frank Herbert")
-    book3 = Book("1984", "George Orwell")
+    laptop = Product("laptop", "P001", 1200.00, 10)
+    mouse = Product("mouse", "P002", 25.50, 50)
+    keyboard = Product("keyboard", "P003", 75.00, 20)
 
-    # --- 測試案例 ---
-    print("--- 🧪 開始圖書館系統測試 ---")
 
-    # 1. 將書本加入館藏
-    city_library.add_book(book1)
-    city_library.add_book(book2)
-    city_library.add_book(book3)
+    my_cart = ShoppingCart()
 
-    # 2. 列出所有可借閱的書
-    city_library.list_available_books()
+    print("--- 🧪 測試 add_product 方法 ---")
+    my_cart.add_product(laptop, 1)
+    my_cart.add_product(mouse, 2)
+    my_cart.add_product(laptop, 1) # 再次加入筆電，應該更新數量
+    my_cart.add_product(keyboard, 3)
+    my_cart.add_product(mouse, 1) # 再次加入滑鼠，應該更新數量
 
-    # 3. 測試借書流程
-    print("\n--- 測試借書 ---")
-    city_library.check_out_book("沙丘")      # 成功借出
-    city_library.check_out_book("沙丘")      # 借第二次，應顯示已被借出
-    city_library.check_out_book("不存在的書") # 應顯示沒有此書
+    print(f"\n目前購物車狀態: {my_cart}")
+    print(f"購物車總金額: ${my_cart.calculate_total():.2f}")
 
-    # 4. 再次列出可借閱的書 (沙丘應該不見了)
-    city_library.list_available_books()
-
-    # 5. 測試還書流程
-    print("\n--- 測試還書 ---")
-    city_library.return_book("沙丘")      # 成功歸還
-    city_library.return_book("哈利波特")   # 應顯示已在館內
-
-    # 6. 最終檢查所有可借閱的書 (沙丘應該回來了)
-    city_library.list_available_books()
-
-    print("\n--- ✅ 所有測試案例完成 ---")
+    print("\n--- 測試移除商品 ---")
+    my_cart.remove_product("P001", 1)
+    print(f"\n移除商品後購物車狀態: {my_cart}")
+    print(f"移除商品後總金額: ${my_cart.calculate_total():.2f}")
