@@ -351,34 +351,6 @@ if __name__ == "__main__":
     #"P002": {"name": "滑鼠", "price": 25.50, "stock": 50},
     # ... 更多商品
 #}
-"""
-__init__(self)
-用途：建構子 (Constructor)。這是物件的「出生證明」。每當你寫 my_shop = InventoryManager() 時，這個方法就會被自動呼叫。
-職責：初始化物件的內部狀態。在這裡，它的工作是建立一個空的字典 self.products。這就像給你的商店一個全新的、空白的庫存帳本，準備好記錄商品。
-2. add_product(self, ...)
-用途：新增商品。這是向庫存帳本中添加一筆新紀錄的方法。
-職責：
-防衛性檢查：if product_id in self.products: 檢查這個商品 ID 是否已經存在。如果存在，就印出錯誤訊息並用 return 提前結束，防止覆蓋資料。
-建立巢狀資料：self.products[product_id] = { ... } 這是最關鍵的一步。它使用傳入的 product_id 變數（例如 "P001"）作為外層字典的鍵，並將商品的其他資訊打包成一個新的內層字典作為值。
-3. update_stock(self, ...)
-用途：更新庫存。處理商品的賣出（減少庫存）或進貨（增加庫存）。
-職責：
-存在性檢查：先確認要更新的商品是否存在於庫存中。
-庫存充足性檢查：在減少庫存前，必須檢查 if current_stock + quantity_change < 0。這能防止庫存變成負數，確保了資料的正確性。
-更新值：如果所有檢查都通過，它會精準地找到 self.products[product_id]["stock"] 這個位置，並更新它的值。
-4. get_product_details(self, ...)
-用途：安全地查詢商品。
-職責：使用字典的 .get() 方法。這個方法非常安全，如果 product_id 存在，它會回傳對應的商品字典；如果不存在，它會回傳 None，而不會像 self.products[product_id] 那樣直接報錯。
-5. list_all_products(self)
-用途：生成報告。以人類易讀的格式，將整個庫存清單漂亮地印出來。
-職責：遍歷 self.products 字典，並使用 f-string 的格式化功能（例如 f"{'ID':<10}"）來對齊文字，產生一個整齊的表格。
-6. calculate_total_value(self)
-用途：數據分析。計算整個商店庫存的總價值。
-職責：遍歷 self.products.values()（所有內層的商品字典），將每個商品的 price * stock 相加，最後回傳總和。
-7. __repr__(self)
-用途：開發者友善的物件表示。
-職責：定義當你直接 print(my_shop_inventory) 時，應該顯示什麼內容。它提供了一個關於物件當前狀態的快速快照，例如有多少種商品、總價值是多少，這在除錯時非常有用。
-"""
 
 class InventoryManager():
     def __init__(self):
@@ -481,3 +453,391 @@ if __name__ == "__main__":
     # 7. (加分題) 看看 __repr__ 的效果
     print(f"\n庫存管理系統物件資訊: {my_shop_inventory}")
 
+
+
+"""
+class BankAccount:
+    def __init__(self, account_holder: str, initial_balance: float = 0.0):
+        self.account_holder = account_holder
+        self.initial_balance = initial_balance
+        self.transactions = []
+        print(f'Welocome {user}! your account has been added.')
+
+    def deposit(self, amount: float):
+        if amount < 0:
+            print("Invalid amount of deposit, please try again.")
+            return None
+
+        self.initial_balance += amount
+
+        current_record_deposit = {}
+        current_record_deposit[type] = 'deposit'
+        current_record_deposit[amount] = self.initial_balance
+
+        self.transactions.append(current_record_deposit)
+        print(f"{current_record_deposit[type]} ${amount} successfully executed. Initial balance: ${self.initial_balance}")
+
+
+    def withdraw(self, amount: float):
+        if amount < 0:
+            print("Invalid amount of deposit, please try again.")
+            return None
+
+        if amount > self.initial_balance:
+            print(f"Not enough amount to execute the withdraw, please try again")
+            return None
+
+        self.initial_balance -= amount
+        
+        current_record_withdraw = {}
+        current_record_withdraw[type] = 'withdraw'
+        current_record_withdraw[amount] = self.initial_balance
+
+        self.transactions.append(current_record_withdraw)
+        print(f"{current_record_withdraw[type]} ${amount} successfully executed. Initial balance: ${self.initial_balance}")
+
+
+
+    def get_balance(self) -> float:
+        return self.initial_balance
+
+    def get_transaction_history(self):
+        if not self.transactions:
+            print("No recored exists")
+        for record in self.transactions:
+            return record
+
+    def __repr__(self) -> str:
+        return f"BankAccount(holder='{self.account_holder}', balance=${self.balance:.2f})"
+"""
+
+class BankAccount:
+    def __init__(self, account_holder: str, initial_balance: float = 0.0):
+        self.account_holder = account_holder
+        self.balance = initial_balance
+        self.transactions = []
+        print(f'Welcome {self.account_holder}! your account has been added.')
+
+    def deposit(self, amount: float):
+        if amount <= 0:
+            print("Invalid amount of deposit, please try again.")
+            return
+
+        self.balance += amount
+
+        transaction_record = {'type': 'deposit', 'amount': amount}
+        self.transactions.append(transaction_record)
+        print(f"Deposit of ${amount:.2f} successful. New balance: ${self.balance:.2f}")
+
+
+    def withdraw(self, amount: float):
+        if amount <= 0:
+            print("Invalid amount of deposit, please try again.")
+            return 
+
+        if amount > self.balance:
+            print(f"Insufficient funds. Current balance is ${self.balance:.2f}.")
+            return
+
+        self.balance -= amount
+        
+        transaction_record = {'type': 'withdraw', 'amount': amount}
+        self.transactions.append(transaction_record)
+        print(f"Withdrawal of ${amount:.2f} successful. New balance: ${self.balance:.2f}")
+
+
+
+    def get_balance(self) -> float:
+        return self.balance
+
+    def get_transaction_history(self):
+        if not self.transactions:
+            print("No transaction records exist.")
+            return
+        
+        print(f"\n--- Transaction History for {self.account_holder} ---")
+        # 修正：應該遍歷並印出每一筆紀錄，而不是只回傳第一筆
+        for record in self.transactions:
+            print(f"- Type: {record['type']:<8} | Amount: ${record['amount']:.2f}")
+
+    def __repr__(self) -> str:
+        return f"BankAccount(holder='{self.account_holder}', balance=${self.balance:.2f})"
+
+if __name__ == "__main__":
+    print("--- 🧪 Starting BankAccount Test Cases ---")
+
+    # 1. 建立一個新帳戶
+    print("\n[Test 1: Account Creation]")
+    my_account = BankAccount("Aaron", 100.0)
+    print(f"Account created: {my_account}")
+    print(f"Initial balance check: ${my_account.get_balance():.2f}")
+    print("-" * 20)
+
+    # 2. 測試有效的存款
+    print("\n[Test 2: Valid Deposit]")
+    my_account.deposit(50.0)
+    print("-" * 20)
+
+    # 3. 測試有效的提款
+    print("\n[Test 3: Valid Withdrawal]")
+    my_account.withdraw(30.0)
+    print("-" * 20)
+
+    # 4. 測試無效的存款 (負數)
+    print("\n[Test 4: Invalid Deposit (Negative Amount)]")
+    my_account.deposit(-20.0)
+    print(f"Balance after invalid deposit: ${my_account.get_balance():.2f}")
+    print("-" * 20)
+
+    # 5. 測試餘額不足的提款
+    print("\n[Test 5: Insufficient Funds Withdrawal]")
+    my_account.withdraw(200.0) # 目前餘額應為 100 + 50 - 30 = 120
+    print(f"Balance after failed withdrawal: ${my_account.get_balance():.2f}")
+    print("-" * 20)
+
+    # 6. 顯示最終的交易紀錄
+    my_account.get_transaction_history()
+
+    print("\n--- ✅ All Test Cases Completed ---")
+
+
+
+"""
+class Book:
+    def __init__(self, title: str, author: str):
+        self.title = title
+        self.author = author
+        self.is_check_out = False 
+
+    def __repr__(self) -> str:
+        if self.is_check_out == False:
+            return f"<Book: {self.title} by {self.author} (Available)>"
+        else:
+            return f"<Book: {self.title} by {self.author} (Checked Out)>"
+
+
+class Library:
+    def __init__(self, name: str):
+        self.name = name
+        self.books = []
+
+    def add_book(self, book_object: Book):
+        print(f"Added {self.name} in library successfully")
+        return self.book.append(book_object)
+
+
+    def check_out_book(self, title: str):
+        if title not in self.title:
+            return f"Sorry, {title} doesn't exist"
+        for books in self.books:
+            if books == title and self.is_check_out == False:
+                print(f"Successfully borrowed {self.title}.")
+                self.is_check_out = True
+            else:
+                print(f"Sorry, {self.title} has been borrowed")
+
+    def return_book(self, title: str):
+        if title in self.books and self.is_check_out == False:
+            return f"{title} is already exist in library, don't need to return"
+        for books in self.books:
+            if books == title:
+                print(f"{title} has been returned")
+                self.is_check_out = False
+
+
+    def list_available_books(self):
+        for books in self.books:
+            if books.is_check_out == False:
+                print(f"{books.title}")
+
+"""
+
+
+class Book:
+    def __init__(self, title: str, author: str):
+        self.title = title
+        self.author = author
+        self.is_check_out = False 
+
+    def __repr__(self) -> str:
+        if self.is_check_out == False:
+            return f"<Book: {self.title} by {self.author} (Available)>"
+        else:
+            return f"<Book: {self.title} by {self.author} (Checked Out)>"
+
+
+class Library:
+    def __init__(self, name: str):
+        self.name = name #name of library
+        self.books = [] #books of library
+
+    def add_book(self, book_object: Book):
+        self.books.append(book_object)
+        print(f"Added {book_object.title} in library successfully") 
+
+
+    def check_out_book(self, title: str):
+        for book in self.books:
+            # match the title first
+            if book.title == title: 
+                if not book.is_check_out:
+                    book.is_check_out = True
+                    print(f"Borrowed {title} successfully")
+                else:
+                    print(f"{title} has been borrowed")
+                return
+        print(f"{title} doesn't exist")
+
+
+    def return_book(self, title: str):
+        for book in self.books:
+            if book.title == title:
+                if book.is_check_out:
+                    book.is_check_out = False
+                    print(f"Return {title} successfully")
+                # 使用 else 來確保兩種情況只會發生一種
+                else:
+                    print(f"{title} hasn't been borrowed, don't need to return")
+                return
+
+        print(f"{title} doesn't exist")
+
+
+    def list_available_books(self):
+        avalible_books = []
+        for book in self.books:
+            if not book.is_check_out:
+                avalible_books.append(book)
+
+        if not avalible_books:
+            print(f"All books are borrowed")
+        else:
+            for book in avalible_books:
+                print(book)
+
+if __name__ == "__main__":
+    city_library = Library("市立圖書館")
+    book1 = Book("哈利波特", "J.K. Rowling")
+    book2 = Book("沙丘", "Frank Herbert")
+    book3 = Book("1984", "George Orwell")
+
+    # --- 測試案例 ---
+    print("--- 🧪 開始圖書館系統測試 ---")
+
+    # 1. 將書本加入館藏
+    city_library.add_book(book1)
+    city_library.add_book(book2)
+    city_library.add_book(book3)
+
+    # 2. 列出所有可借閱的書
+    city_library.list_available_books()
+
+    # 3. 測試借書流程
+    print("\n--- 測試借書 ---")
+    city_library.check_out_book("沙丘")      # 成功借出
+    city_library.check_out_book("沙丘")      # 借第二次，應顯示已被借出
+    city_library.check_out_book("不存在的書") # 應顯示沒有此書
+
+    # 4. 再次列出可借閱的書 (沙丘應該不見了)
+    city_library.list_available_books()
+
+    # 5. 測試還書流程
+    print("\n--- 測試還書 ---")
+    city_library.return_book("沙丘")      # 成功歸還
+    city_library.return_book("哈利波特")   # 應顯示已在館內
+
+    # 6. 最終檢查所有可借閱的書 (沙丘應該回來了)
+    city_library.list_available_books()
+
+    print("\n--- ✅ 所有測試案例完成 ---")
+
+
+class Product:
+    """ 
+    Represents a single product with its details.
+
+    Attributes:
+        name (str): The name of the product.
+        product_id (str): The unique identifier for the product.
+        price (float): The price of the product.
+        stock (int): The available quantity in stock.
+    """
+    def __init__(self, name: str, product_id: str, price: float, stock: int):
+        self.name = name
+        self.product_id = product_id
+        self.price = price
+        self.stock = stock
+
+    def __repr__(self) -> str:
+        if self.stock > 0:
+            return f"<Product: {self.name} (ID: {self.product_id}), Price: ${self.price}, Stock: {self.stock}>"
+        else:
+            return f"<Product: {self.name} (ID: {self.product_id}), Price: ${self.price} (Out of Stock)>"
+
+class ShoppingCart:
+    """     
+    Attribute:
+        Set "product_list" as a dict.
+        example: product_list = {'P001': {'product': <Product Object>, 'quantity': 2}}
+
+    Funtions of ShoppingCart:
+        1. Add product
+        2. Calculate total prices
+        3. Remove and add products (if adding same products, should update its amount,
+        instead of adding another product in list)
+    """
+
+    def __init__(self):
+        self.product_list = {}
+
+    def add_product(self, product: Product, quantity: int = 1) -> None:
+        p_id = product.product_id
+
+        if p_id in self.product_list:
+            self.product_list[p_id]['quantity'] += quantity
+            print(f"updated {product.name} quantity to {self.product_list[p_id]['quantity']}")
+        else:
+            self.product_list[p_id] = {'product': product, 'quantity': quantity}
+            print(f"Added {quantity} {product.name}s into shopping cart successfully.")
+
+    def remove_product(self, product_id: str, quantity: int = 1) -> None:
+        if product_id in self.product_list:
+            self.product_list.pop(product_id)
+            print(f"{product_id} has been removed from shopping cart")
+        else:
+            print(f"{product_id} does not exist in the shopping cart")
+
+    def calculate_total(self) -> float:
+        total_price = 0
+        for products in self.product_list.values():
+            total_price += products['product'].price * products['quantity']
+        return total_price
+
+    def __repr__(self):
+        num_items = sum(item_data['quantity'] for item_data in self.product_list.values())
+        num_unique_products = len(self.product_list)
+        total_value = self.calculate_total()
+        return f"<ShoppingCart: {num_unique_products} unique products, {num_items} total items, Total: ${total_value:.2f}>"
+
+if __name__ == "__main__":
+    laptop = Product("laptop", "P001", 1200.00, 10)
+    mouse = Product("mouse", "P002", 25.50, 50)
+    keyboard = Product("keyboard", "P003", 75.00, 20)
+
+
+    my_cart = ShoppingCart()
+
+    print("--- 🧪 測試 add_product 方法 ---")
+    my_cart.add_product(laptop, 1)
+    my_cart.add_product(mouse, 2)
+    my_cart.add_product(laptop, 1) # 再次加入筆電，應該更新數量
+    my_cart.add_product(keyboard, 3)
+    my_cart.add_product(mouse, 1) # 再次加入滑鼠，應該更新數量
+
+    print(f"\n目前購物車狀態: {my_cart}")
+    print(f"購物車總金額: ${my_cart.calculate_total():.2f}")
+
+    print("\n--- 測試移除商品 ---")
+    my_cart.remove_product("P001", 1)
+    print(f"\n移除商品後購物車狀態: {my_cart}")
+    print(f"移除商品後總金額: ${my_cart.calculate_total():.2f}")
