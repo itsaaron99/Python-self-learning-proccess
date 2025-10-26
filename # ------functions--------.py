@@ -787,12 +787,13 @@ if __name__ == "__main__":
 """
 #test run
 def find_item_in_cart(cart, item_name):
-    """Finds an item in the cart by its name and returns it, or None if not found."""
+    Finds an item in the cart by its name and returns it, or None if not found.
+    
     if not item_name in cart:
         return None
     else:
         return item_name
-
+"""
 
 # --- Part 2: Main Feature Functions ---
 
@@ -901,7 +902,7 @@ if __name__ == "__main__":
 # --- Micro-Practice: Strengthening Core Function Skills ---
 
 def find_book_author_by_title(book_list, title_to_find):
-    """
+    
     Finds a book in a list by its title and returns the author's name.
     """
     #  Loop through each 'book' (which is a dictionary) in the 'book_list'.
