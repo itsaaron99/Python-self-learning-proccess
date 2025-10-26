@@ -1,4 +1,5 @@
-A self-learning Python guy, recording the topics that I've learned, trying to become a test engineer with below roadmap, 
+A self-learning Python guy, recording the topics that I've learned, trying to become a test engineer with below roadmap:
+
 
 Stage 1: Python Foundational Infrastructure
 
