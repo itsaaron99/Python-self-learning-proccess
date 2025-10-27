@@ -1,4 +1,4 @@
-A self-learning Python guy, recording the topics that I've learned with below roadmap:
+A self-learning Python proccess, by the topics that I've learned with below roadmap:
 
 
 
