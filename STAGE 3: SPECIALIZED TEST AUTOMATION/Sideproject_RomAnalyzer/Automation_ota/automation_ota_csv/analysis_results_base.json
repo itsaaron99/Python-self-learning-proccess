@@ -1,0 +1,56 @@
+{
+    "analysis_metadata": {
+        "devices_in_scope": [
+            "comet",
+            "oriole",
+            "raven"
+        ],
+        "rom_type_filter": "base",
+        "source_file": "data.csv",
+        "total_devices_in_scope": 3
+    },
+    "common_roms_for_all_devices": [
+        "BP2A.250812.002.A2"
+    ],
+    "shared_roms_usage (all devices)": {
+        "AP1A.250425.001.B1": {
+            "amount": 1,
+            "devices": [
+                "raven"
+            ]
+        },
+        "AP1A.250425.001.C1": {
+            "amount": 1,
+            "devices": [
+                "oriole"
+            ]
+        },
+        "AP1A.250425.001.C2": {
+            "amount": 1,
+            "devices": [
+                "comet"
+            ]
+        },
+        "BP2A.250812.002.A2": {
+            "amount": 3,
+            "devices": [
+                "comet",
+                "oriole",
+                "raven"
+            ]
+        },
+        "BP2A.250912.001": {
+            "amount": 2,
+            "devices": [
+                "comet",
+                "raven"
+            ]
+        },
+        "BP2A.250912.002": {
+            "amount": 1,
+            "devices": [
+                "oriole"
+            ]
+        }
+    }
+}

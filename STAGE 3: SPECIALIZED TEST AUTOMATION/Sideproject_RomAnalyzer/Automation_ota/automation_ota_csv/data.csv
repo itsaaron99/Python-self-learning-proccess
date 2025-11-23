@@ -1,0 +1,13 @@
+device,rom_type,rom_build
+raven,base,BP2A.250912.001
+raven,base,BP2A.250812.002.A2
+raven,base,AP1A.250425.001.B1
+raven,target,BP3A.250912.002
+oriole,base,BP2A.250912.002
+oriole,base,BP2A.250812.002.A2
+oriole,base,AP1A.250425.001.C1
+oriole,target,BP3A.250912.002
+comet,base,BP2A.250912.001
+comet,base,BP2A.250812.002.A2
+comet,base,AP1A.250425.001.C2
+comet,target,BP3A.250912.002.A1
