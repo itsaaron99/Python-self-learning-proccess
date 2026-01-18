@@ -1,0 +1,10 @@
+TestBeds:
+  - Name: EnterpriseTestBed
+    Controllers:
+      AndroidDevice:
+        - serial: emulator-5554
+
+UserParams:
+  wifi_ssid: "NoneExistWifi"
+  wifi_pwd: ""
+  ping_target: "8.8.8.8"
