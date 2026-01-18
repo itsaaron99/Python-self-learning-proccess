@@ -1,0 +1,8 @@
+TestBeds:
+  - Name: MoblyHelloBed
+    Controllers:
+      AndroidDevice:
+        - serial: emulator-5554
+    UserParams:
+      wifi_ssid: AndroidWifi
+      wifi_pwd: ""
