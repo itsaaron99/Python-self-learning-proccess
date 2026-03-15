@@ -4,7 +4,7 @@ Quick sort:
 Find random element for pivot(assume = arr[0]), which will split the arr into 3 partitions, including:
 - the pivot
 - smaller than the pivot and greater
-- use fro loop to compare the smaller and greater itself
+- use for loop to compare the smaller and greater itself
 - Finally, return [smaller] + [pivot] + [greater]
 
 Example: arr = [3, 5, 2, 4, 1]
@@ -25,7 +25,10 @@ def quick_sort(arr):
         return arr
     else:
         pivot = arr[0]
-        """ case for there elements duplicated in arr, <= pivot & >= pivot """
+        """ 
+        case for there elements duplicated in arr, 
+        including the duplicate element and avloid the pivot
+        """
         less = [i for i in arr[1:] if i <= pivot]
         greater = [i for i in arr[1:] if i > pivot]
         return quick_sort(less) + [pivot] + quick_sort(greater)
@@ -42,4 +45,3 @@ if __name__ == "__main__":
     assert quick_sort(mutiple_ele) == [1, 2, 3, 3, 4, 5]
 
     print("All tests pass!!!")
-
