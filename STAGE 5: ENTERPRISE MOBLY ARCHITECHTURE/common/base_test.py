@@ -1,6 +1,7 @@
 from mobly import base_test
 from mobly.controllers import android_device
 from libs.wifi_controller import WifiController
+from libs.app_controller import AppController
 
 class EnterpriseBaseTest(base_test.BaseTestClass):
     """
@@ -17,3 +18,4 @@ class EnterpriseBaseTest(base_test.BaseTestClass):
 
         """ Dependency Injection: Create WifiController instance with the device """
         self.wifi_controller = WifiController(self.dut)
+        self.app_controller = AppController(self.dut)

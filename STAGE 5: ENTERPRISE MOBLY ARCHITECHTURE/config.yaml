@@ -7,4 +7,4 @@ TestBeds:
 UserParams:
   wifi_ssid: "NoneExistWifi"
   wifi_pwd: ""
-  ping_target: "8.8.8.8"
+  target_app_pkg: "com.android.settings"
