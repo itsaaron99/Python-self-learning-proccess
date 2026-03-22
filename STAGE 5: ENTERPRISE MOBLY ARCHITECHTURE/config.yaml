@@ -7,4 +7,5 @@ TestBeds:
 UserParams:
   wifi_ssid: "NoneExistWifi"
   wifi_pwd: ""
-  target_app_pkg: "com.android.settings"
+  target_app_pkg: "mobly_test.apk"
+  test_app_path: "tests/test_data/apks/mobly_test.apk"
