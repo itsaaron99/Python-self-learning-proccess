@@ -118,3 +118,96 @@ class AppController:
 
         self.ad.log.error('AppController: Fail to clear %s.', config.target_app_pkg)
         return False
+
+    def launch_app(self, config: AppConfig):
+        """
+        1. check if app is installed
+        2. using try-except to execute the ABD command: 
+            "adb shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
+        3. call func is_app_in_foreground() to check if app has been activated.
+        """
+        self.ad.log.info('AppController: Launching %s...', config.target_app_pkg)
+        if not self.is_installed(config):
+            self.ad.log.error('AppController: %s is not installed, please try again.', config.target_app_pkg)
+            return False
+        
+        try:
+            self.ad.adb.shell(['monkey', '-p', config.target_app_pkg, '-c', 'android.intent.category.LAUNCHER', '1'])
+
+        except Exception as e:
+            error_msg = str(e).lower()
+            if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
+                self.ad.log.error(f'AppController: device disconnection, fail to launch {config.target_app_pkg}')
+                raise RuntimeError(f"ADB connection error: {e}")
+
+            self.ad.log.error('AppController: adb launch command failed. Error: %s', e)
+            return False
+
+        if self.is_app_in_foreground(config):
+            return True
+        self.ad.log.error('AppController: Fail to launch app %s, is not in foreground', config.target_app_pkg)
+        return False
+
+    def is_app_in_foreground(self, config: AppConfig) -> bool:
+        """
+        Check if app is in foreground, will not return errors.
+        1. ADB command: adb shell dumpsys activity activities
+        2. Catch log of config.target_app_pkg
+        """
+        self.ad.log.info('AppController: Checking if %s in foreground...', config.target_app_pkg)
+
+        try:
+            log_output = self.ad.adb.shell(['dumpsys', 'activity', 'activities'])
+        
+        except Exception as e:
+            error_msg = str(e).lower()
+            if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
+                self.ad.log.error('AppController: device disconnection, fail to check if %s launching...', config.target_app_pkg)
+                raise RuntimeError(f"ADB connection error: {e}")
+            
+            self.ad.log.error('AppController: adb dumpsys command failed. Error: %s', e)
+            return False
+
+        msg = log_output.decode('utf-8') if isinstance(log_output, bytes) else str(log_output)
+        """ 
+        Using .splitlines to capture both 'mResumedActivity' and config.target_app_pkg is in log or not 
+        """
+        for line in msg.splitlines():
+            if 'mResumedActivity' in line and config.target_app_pkg in line:
+                self.ad.log.info('AppController: %s is currently in foreground.', config.target_app_pkg)
+                return True
+
+        self.ad.log.error('AppController: %s is NOT in foreground.', config.target_app_pkg)
+        return False
+
+    def get_app_version(self, config: AppConfig) -> str | None:
+        """
+        1. ADB command: adb shell dumpsys package {package_name}, capturing "versionName=1.2.0"
+        2. error handing by using try-except, call func is installed to do double check
+        3. finally, check the version number in log
+        """
+        self.ad.log.info('AppController: Executing %s version checking process ...', config.target_app_pkg)
+        if not self.is_installed(config):
+            self.ad.log.error('AppController: %s is not installed, please check again.', config.target_app_pkg)
+            return None
+
+        try:
+            log_output = self.ad.adb.shell(['dumpsys', 'package', config.target_app_pkg])
+            
+        except Exception as e:
+            error_msg = str(e).lower()
+            if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
+                self.ad.log.error('AppController: device disconnection, fail to get %s version...', config.target_app_pkg)
+                raise RuntimeError(f"ADB connection error: {e}")
+            
+            self.ad.log.error('AppController: adb dumpsys command failed. Error: %s', e)
+            return None
+
+        msg = log_output.decode('utf-8') if isinstance(log_output, bytes) else str(log_output)
+        for line in msg.splitlines():
+            if 'versionName=' in line:
+                version = line.split('=')[1].strip()
+                return version
+
+        self.ad.log.error('AppController: Cannot get %s version, please try again', config.target_app_pkg)
+        return None
