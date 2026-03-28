@@ -1,4 +1,4 @@
-# Self-Learning Python Process
+# UI Automation learning process in mobly
 
 A documentation of my journey learning Python, specifically focused on **Test Automation Engineering**. Below is the roadmap I follow:
 
