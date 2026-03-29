@@ -1,10 +1,10 @@
 """
 TODO:
 1. Add clear_data() - done
-2. Add launch_app()
-3. Add get_app_version()
+2. Add launch_app() - done
+3. Add get_app_version() - done
 4. Add take_screenshot()
-5. Add is_app_in_foreground()
+5. Add is_app_in_foreground() - done
 """
 from data_models.app_protos import AppConfig
 
@@ -54,7 +54,7 @@ class AppController:
 
         return self.is_installed(config)
 
-    def uninstall(self, config: AppConfig):
+    def uninstall(self, config: AppConfig) -> bool:
         """
         step 1: check if the apk doesn't exist, return True directly
         step 2: execute the adb command, using try-except to do error handing
@@ -87,7 +87,7 @@ class AppController:
         self.ad.log.info('AppController: %s uninstalled successfully', config.target_app_pkg)
         return True
     
-    def clear_data(self, config: AppConfig):
+    def clear_data(self, config: AppConfig) -> bool:
         """
         Step 1: call isinstalled(), if false, use log error
         Step 2: execute the ADB command, using try-except to do error handing
@@ -119,11 +119,11 @@ class AppController:
         self.ad.log.error('AppController: Fail to clear %s.', config.target_app_pkg)
         return False
 
-    def launch_app(self, config: AppConfig):
+    def launch_app(self, config: AppConfig) -> bool:
         """
         1. check if app is installed
         2. using try-except to execute the ABD command: 
-            "adb shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
+           "adb shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
         3. call func is_app_in_foreground() to check if app has been activated.
         """
         self.ad.log.info('AppController: Launching %s...', config.target_app_pkg)
@@ -152,7 +152,9 @@ class AppController:
         """
         Check if app is in foreground, will not return errors.
         1. ADB command: adb shell dumpsys activity activities
-        2. Catch log of config.target_app_pkg
+        2. Catch log of config.target_app_pkg by using decode handeling, else str()
+           Log examples:
+           mResumedActivity: ActivityRecord{... com.android.settings/.Settings ...}
         """
         self.ad.log.info('AppController: Checking if %s in foreground...', config.target_app_pkg)
 
@@ -211,3 +213,45 @@ class AppController:
 
         self.ad.log.error('AppController: Cannot get %s version, please try again', config.target_app_pkg)
         return None
+
+    def take_screenshot(self, dest_path: str) -> bool:
+        """
+        Using try-except-finally to do error handing
+        1. Take screenshot on device
+            ADB command: adb shell screencap -p /sdcard/temp_screen.png
+
+        2. Pull the file to local Mac
+            ADB command: adb pull /sdcard/temp_screen.png {dest_path}
+
+        3. Remove the temporary file from device (MUST execute)
+            ADB command: adb shell rm /sdcard/temp_screen.png
+        """
+        self.ad.log.info('AppController: Taking screenshot and saving to %s... ', dest_path)
+
+        try:
+            self.ad.adb.shell(['screencap', '-p', '/sdcard/temp_screen.png'])
+            self.ad.adb.pull(['/sdcard/temp_screen.png', dest_path])
+
+        except Exception as e:
+            error_msg = str(e).lower()
+            if 'offline' in error_msg or 'not found' in error_msg or 'disconnected' in error_msg:
+                self.ad.log.error('AppController: device disconnection, fail to pull screenshot into %s... ', dest_path)
+                raise RuntimeError(f"ADB connection error: {e}")
+
+            self.ad.log.error('AppController: adb shell command failed. Error: %s', e)
+            return False
+                        
+        finally:
+
+            try:
+                self.ad.adb.shell(['rm', '/sdcard/temp_screen.png'])
+
+            except Exception as eclean_e:
+                """ 
+                Use warning to avoid the message replaced the error msg in step1 and step2,
+                will not return True or False.
+                """
+                self.ad.log.warning('AppController: adb shell command failed. Error: %s', eclean_e)
+
+        self.ad.log.info('AppController: Screenshot successfully saved to %s', dest_path)
+        return True

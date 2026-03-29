@@ -7,5 +7,5 @@ TestBeds:
 UserParams:
   wifi_ssid: "NoneExistWifi"
   wifi_pwd: ""
-  target_app_pkg: "mobly_test.apk"
-  test_app_path: "tests/test_data/apks/mobly_test.apk"
+  target_app_pkg: "me.zhanghai.android.files"
+  test_app_path: "/Users/aaron/Desktop/Learning Roadmap & Progress/STAGE 5: ENTERPRISE MOBLY ARCHITECHTURE/tests/test_data/apks/me.zhanghai.android.files_37.apk"
